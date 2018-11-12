@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <!--MyBatis性能配置-->
+    <settings>
+
+        <!--全局性地启用或禁止所有在mapper配置文件中配置的缓存，默认值true-->
+        <setting name="cacheEnabled" value="true"/>
+
+        <setting name="defaultStatementTimeout" value="3000"/>
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+        <setting name="useGeneratedKeys" value="true"/>
+    </settings>
+
+    <!--别名,必须设置在settings之后-->
+    <typeAliases>
+        <typeAlias type="com.company.dao.pojo.User" alias="UserPOJO"></typeAlias>
+        <typeAlias type="com.company.service.vo.PageVO" alias="PageVO"></typeAlias>
+        <typeAlias type="com.company.service.vo.HiredateVO" alias="HiredateVO"></typeAlias>
+    </typeAliases>
+
+</configuration>

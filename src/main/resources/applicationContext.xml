@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd"
+>
+
+    <!-- 自动扫描注解的bean -->
+    <context:component-scan base-package="com.company"/>
+
+    <!--整合SpringMVC框架-->
+    <!--2 配置能够访问SpringMVC框架下的动态资源  .do-->
+    <mvc:annotation-driven>
+        <mvc:message-converters register-defaults="true">
+            <bean class="com.company.action.commons.encoding.UTF8StringHttpMessageConverter"/>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+    <!--3 配置能够访问SpringMVC框架下的静态资源  html，js，css，图片-->
+    <mvc:default-servlet-handler/>
+    <!--4 配置适合于Spring4的返回json的视图解析器-->
+    <bean class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+        <property name="favorPathExtension" value="true"/>
+        <property name="favorParameter" value="true"/>
+        <property name="ignoreAcceptHeader" value="true"></property>
+        <property name="defaultContentType" value="text/html"/>
+        <property name="mediaTypes">
+            <map>
+                <!-- 告诉视图解析器，返回的类型为json等格式 -->
+                <entry key="json" value="application/json"/>
+                <entry key="xml" value="application/xml"/>
+                <entry key="htm" value="text/htm"/>
+            </map>
+        </property>
+    </bean>
+    <!--设置CommonsMultipartResolver,用于springmvc文件上传功能 -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- 此处20971520=20*1024*1024,规定上传文件最大不超过20M -->
+        <property name="maxUploadSize" value="20971520"></property>
+        <property name="defaultEncoding" value="UTF-8"></property>
+        <property name="resolveLazily" value="true"></property>
+    </bean>
+
+    <!--配置页面渲染的视图解析器-->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/views/"></property>
+        <property name="suffix" value=".jsp"></property>
+    </bean>
+
+    <!-- 引入jdbc配置文件 -->
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:properties/*.properties</value>
+                <!--要是有多个配置文件，只需在这里继续添加即可 -->
+            </list>
+        </property>
+    </bean>
+
+    <!-- 配置数据源 -->
+    <bean id="dataSource"
+          class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <!-- 不使用properties来配置 -->
+        <!-- <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+            <property name="url" value="jdbc:mysql://localhost:3306/test" />
+            <property name="username" value="root" />
+            <property name="password" value="root /> -->
+        <!-- 使用properties来配置 -->
+        <property name="driverClassName">
+            <value>${jdbc_driverClassName}</value>
+        </property>
+        <property name="url">
+            <value>${jdbc_url}</value>
+        </property>
+        <property name="username">
+            <value>${jdbc_username}</value>
+        </property>
+        <property name="password">
+            <value>${jdbc_password}</value>
+        </property>
+    </bean>
+
+    <!-- 自动扫描了所有的XxxxMapper.xml对应的mapper接口文件，这样就不用一个一个手动配置Mpper的映射了，只要Mapper接口类和Mapper映射文件对应起来就可以了。 -->
+    <!--
+    `1-找到UserDao接口
+    2-找到UserDao接口对应的mapper.xml文件，生成代理类对象，然后注册到Spring容器中，名称就是“userDao”
+    -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.company.dao"/>
+    </bean>
+
+    <!-- 配置Mybatis的文件 ，mapperLocations配置**Mapper.xml文件位置，configLocation配置mybatis-config文件位置-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="configLocation" value="classpath:mybatis/mybatis-config.xml"/>
+        <property name="mapperLocations" value="classpath:mapper/*.xml"/>
+    </bean>
+
+    <!-- 事务核心管理器,封装了所有事务操作. 依赖于连接池 -->
+    <bean name="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+    <!-- 配置事务通知 -->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <!-- 以方法为单位,指定方法应用什么事务属性 isolation:隔离级别 propagation:传播行为 read-only:是否只读 -->
+            <tx:method name="insert*" isolation="READ_COMMITTED"
+                       propagation="REQUIRED" read-only="false" />
+            <tx:method name="delete*" isolation="READ_COMMITTED"
+                       propagation="REQUIRED" read-only="false" />
+            <tx:method name="update*" isolation="READ_COMMITTED"
+                       propagation="REQUIRED" read-only="false" />
+
+            <tx:method name="find*" isolation="READ_COMMITTED"
+                       propagation="REQUIRED" read-only="true" />
+
+        </tx:attributes>
+    </tx:advice>
+
+    <!-- 配置织入 -->
+    <aop:config>
+        <!-- 配置切点表达式:定义在service包和所有子包里的任意类的任意方法的执行 -->
+        <aop:pointcut expression="execution(* com.company.service.impl..*.*(..))" id="txPc" />
+        <!-- 配置切面 : 通知+切点 advice-ref:通知的名称 pointcut-ref:切点的名称 -->
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="txPc" />
+    </aop:config>
+
+</beans>
