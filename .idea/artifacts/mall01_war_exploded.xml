@@ -32,6 +32,8 @@
           <element id="library" level="project" name="Maven: org.mybatis:mybatis:3.2.1" />
           <element id="library" level="project" name="Maven: org.mybatis:mybatis-spring:1.2.0" />
           <element id="library" level="project" name="Maven: mysql:mysql-connector-java:5.1.29" />
+          <element id="library" level="project" name="Maven: com.github.pagehelper:pagehelper:5.0.0" />
+          <element id="library" level="project" name="Maven: com.github.jsqlparser:jsqlparser:0.9.5" />
         </element>
       </element>
       <element id="directory" name="META-INF">
