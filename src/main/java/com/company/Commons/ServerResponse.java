@@ -57,4 +57,37 @@ public class ServerResponse<T> implements Serializable {
         return data;
     }
 
+    public static<T> ServerResponse<T> createSuccessResponse(){
+        return new ServerResponse<T>(ResponseCode.SUCCESS.getCode());
+    }
+
+    public static<T> ServerResponse<T> createSuccessResponse(T data){
+        return new ServerResponse<T>(ResponseCode.SUCCESS.getCode(),data);
+    }
+
+    public static<T> ServerResponse<T> createSuccessResponse(String msg,T data){
+        return new ServerResponse<T>(ResponseCode.SUCCESS.getCode(),msg,data);
+    }
+    public static<T> ServerResponse<T> createSuccessMessageResponse(String msg){
+        return new ServerResponse<T>(ResponseCode.SUCCESS.getCode(),msg);
+    }
+
+    public static<T> ServerResponse<T> createSuccessErrorResponse(){
+        return new ServerResponse<T>(ResponseCode.ERROR.getCode());
+    }
+
+    public static<T> ServerResponse<T> createErrorResponse(T data){
+        return new ServerResponse<T>(ResponseCode.ERROR.getCode(),data);
+    }
+
+    public static<T> ServerResponse<T> createErrorResponse(String msg,T data){
+        return new ServerResponse<T>(ResponseCode.ERROR.getCode(),msg,data);
+    }
+    public static<T> ServerResponse<T> createErrorMessageResponse(String msg){
+        return new ServerResponse<T>(ResponseCode.ERROR.getCode(),msg);
+    }
+
+    public static<T> ServerResponse<T> createErrorCodeMsg(int errCode,String errMsg){
+        return new ServerResponse<T>(errCode,errMsg);
+    }
 }

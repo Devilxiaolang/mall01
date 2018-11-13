@@ -1,5 +1,6 @@
 package com.company.service.iservice;
 
+import com.company.Commons.ServerResponse;
 import com.company.dao.pojo.User;
 import com.company.service.vo.LoginVo;
 
@@ -58,13 +59,21 @@ public interface IUserService {
      * @return true or false
      * 用户登录
      */
-    boolean login(LoginVo loginVo);
+    ServerResponse<User> login(LoginVo loginVo);
 
-    /**
-     *
-     * @param username
-     * @return true or false
-     * 判断用户是否存在
-     */
-    boolean isExist(String username);
+    ServerResponse<User> checkVaild(String str, String type);
+
+    ServerResponse<User> registry(User user);
+
+    ServerResponse<User> getQuestionByUsername(String username);
+
+    ServerResponse<User> checkAnswer(String username, String question, String answer);
+
+    ServerResponse<User> forgetResetPassword(String username, String password, String forgetToken);
+
+    ServerResponse<User> resetPassword(String passwordOld, String passwordNew,User user);
+
+    ServerResponse<User> updateInformation(User user);
+
+    ServerResponse<User> getInformation(Integer id);
 }

@@ -24,22 +24,36 @@
         from emall_user
         where id = #{id,jdbcType=INTEGER}
     </select>
-    <select id="login" parameterType="com.company.service.vo.LoginVo" resultType="java.lang.Integer">
-        select count(1) from emall_user where username = #{username} and password=#{password}
+    <select id="login" parameterType="com.company.service.vo.LoginVo" resultType="com.company.dao.pojo.User">
+        select
+        <include refid="Base_Column_List"/>
+        from emall_user where username = #{username} and password=#{password}
     </select>
     <select id="isExist" parameterType="String" resultType="java.lang.Integer">
         select count(1) from emall_user where username=#{username}
+    </select>
+    <select id="checkEmail" parameterType="String" resultType="java.lang.Integer">
+        select count(1) from emall_user where email=#{email}
+    </select>
+    <select id="secectQuestionByUsername" resultType="java.lang.String">
+        select question from emall_user where username=#{username}
+    </select>
+    <select id="checkAnswer" resultType="java.lang.Integer" parameterType="map">
+        select count(1) from emall_user where username=#{username} and question=#{question} and answer=#{answer}
+    </select>
+    <select id="checkPsassword" resultType="java.lang.Integer" parameterType="map">
+        select count(1) from emall_user where id=#{userId} and password=#{password}
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from emall_user
     where id = #{id,jdbcType=INTEGER}
   </delete>
     <insert id="insert" parameterType="com.company.dao.pojo.User">
-    insert into emall_user (id, username, password, 
+    insert into emall_user (username, password,
       email, phone, question, 
       answer, role, create_time, 
       update_time)
-    values (#{id,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
+    values ( #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
       #{email,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{question,jdbcType=VARCHAR}, 
       #{answer,jdbcType=VARCHAR}, #{role,jdbcType=INTEGER}, now(),
       now())
@@ -71,10 +85,10 @@
             <if test="role != null">
                 role,
             </if>
-            <if test="createTime != null">
+            <if test="createTime == null">
                 create_time,
             </if>
-            <if test="updateTime != null">
+            <if test="updateTime == null">
                 update_time,
             </if>
         </trim>
@@ -103,10 +117,10 @@
             <if test="role != null">
                 #{role,jdbcType=INTEGER},
             </if>
-            <if test="createTime != null">
+            <if test="createTime == null">
                 now(),
             </if>
-            <if test="updateTime != null">
+            <if test="updateTime == null">
                 now(),
             </if>
         </trim>
@@ -135,10 +149,7 @@
             <if test="role != null">
                 role = #{role,jdbcType=INTEGER},
             </if>
-            <if test="createTime != null">
-                create_time = #{createTime,jdbcType=TIMESTAMP},
-            </if>
-            <if test="updateTime != null">
+            <if test="updateTime == null">
                 update_time = now(),
             </if>
         </set>
@@ -153,8 +164,12 @@
       question = #{question,jdbcType=VARCHAR},
       answer = #{answer,jdbcType=VARCHAR},
       role = #{role,jdbcType=INTEGER},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
       update_time = now()
     where id = #{id,jdbcType=INTEGER}
   </update>
+    <update id="updatePasswordByUsername" parameterType="map">
+      update emall_user
+      set password = #{password},update_time = now()
+      where username=#{username}
+    </update>
 </mapper>
