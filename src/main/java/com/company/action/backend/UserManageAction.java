@@ -30,7 +30,7 @@ public class UserManageAction {
             if(user.getRole()== Const.Role.Role_ADMIN){
                 session.setAttribute(Const.CURRENT_USER,user);
             }else {
-                return ServerResponse.createErrorResponse("没有权限无法登录");
+                return ServerResponse.createErrorMessageResponse("没有权限无法登录");
             }
         }
         return responseResult;

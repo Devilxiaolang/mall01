@@ -15,7 +15,7 @@ public class PropertiesUtil {
     private static Logger logger = LoggerFactory.getLogger(PropertiesUtil.class);
     private static Properties props;
     static {
-        String fileName = "mall01.properties";
+        String fileName = "mmall.properties";//一个配置文件
         props = new Properties();
         try {
             props.load(new InputStreamReader(PropertiesUtil.class.getClassLoader().getResourceAsStream(fileName),"UTF-8"));
